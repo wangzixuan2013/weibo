@@ -10,6 +10,25 @@ class UsersController extends Controller
 {
     //
 
+    public function __construct()
+    {
+        $this->middleware('auth',[
+            'except' => ['show', 'create', 'store'],
+        ]);
+
+        $this->middleware('guest', [
+            'only' => ['create']
+        ]);
+    }
+
+    /**
+     * FUN:create
+     * 方法描述：注册页面
+     * USER:gavin.wang
+     * Date: 2019/11/20
+     * Time: 15:33
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function create()
     {
         return view('users.create');
@@ -44,11 +63,13 @@ class UsersController extends Controller
 
     public function edit(User $user)
     {
+        $this->authorize('update',$user);
         return view('users.edit',compact('user'));
     }
 
     public function update(User $user,Request $request)
     {
+        $this->authorize('update',$user);
         $this->validate($request,[
             'name' => 'required|max:50',
             'password' => 'required|confirmed|min:6'
