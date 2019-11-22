@@ -62,4 +62,73 @@ class User extends Authenticatable
     {
         return $this->statuses()->orderBy('created_at','desc');
     }
+
+    /**
+     * FUN:followers
+     * 方法描述:粉丝列表
+     * USER:gavin.wang
+     * Date: 2019/11/22
+     * Time: 19:00
+     */
+    public function followers()
+    {
+        return $this->belongsToMany(User::Class,'followers', 'user_id', 'follower_id');
+    }
+
+    /**
+     * FUN:followings
+     * 方法描述:关注人列表
+     * USER:gavin.wang
+     * Date: 2019/11/22
+     * Time: 19:01
+     */
+    public function followings()
+    {
+        return $this->belongsToMany(User::Class,'followers','follower_id','user_id');
+    }
+
+    /**
+     * FUN:follow
+     * 方法描述:关注
+     * USER:gavin.wang
+     * Date: 2019/11/22
+     * Time: 19:10
+     */
+    public function follow($user_ids)
+    {
+        if ( ! is_array($user_ids)) {
+            $user_ids = compact('user_ids');
+        }
+        $this->followings()->sync($user_ids, false);
+    }
+
+    /**
+     * FUN:unfollow
+     * 方法描述：取消关注
+     * USER:gavin.wang
+     * Date: 2019/11/22
+     * Time: 19:10
+     */
+    public function unfollow($user_ids)
+    {
+        if ( ! is_array($user_ids)) {
+            $user_ids = compact('user_ids');
+        }
+        $this->followings()->detach($user_ids);
+    }
+
+    /**
+     * FUN:isFollowing
+     * 方法描述:check—— user_id是否在当前用户的关注列表里面
+     * USER:gavin.wang
+     * Date: 2019/11/22
+     * Time: 19:16
+     * @return mixed
+     */
+    public function isFollowing($user_id)
+    {
+        return $this->followings()->contains($user_id);
+    }
+
+
 }
